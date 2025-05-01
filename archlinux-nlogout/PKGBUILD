@@ -1,0 +1,30 @@
+# Maintainer: Erik Dubois <erik.dubois@gmail.com>
+pkgname=archlinux-nlogout-git
+_pkgname=archlinux-nlogout-git
+_destname1="/etc/skel/.config/"
+_destname2="/usr/bin/"
+_destname3="/etc/skel/.config/nlogout/bin/"
+_licensedir="/usr/share/archlinux/licenses/"
+pkgver=25.05
+pkgrel=01
+pkgdesc="nimdow logout config for ArchLinux"
+arch=('any')
+url="https://github.com/bojanstrkovski-21/archlinux-nlogout-git"
+license=('MIT')
+makedepends=('git')
+depends=()
+provides=("${pkgname}")
+options=(!strip !emptydirs)
+source=(${_pkgname}::"git+https://github.com/bojanstrkovski-21/${_pkgname}.git")
+sha256sums=('SKIP')
+install='readme.install'
+package() {
+	install -dm755 ${pkgdir}${_licensedir}${_pkgname}
+	install -m644  ${srcdir}/${_pkgname}/LICENSE ${pkgdir}${_licensedir}${_pkgname}
+
+	install -dm755 ${pkgdir}${_destname1}
+	cp -r ${srcdir}/${_pkgname}${_destname1}* ${pkgdir}${_destname1}
+
+	install -dm755 ${pkgdir}${_destname2}
+	cp -r ${srcdir}/${_pkgname}${_destname3}nlogout ${pkgdir}${_destname2}
+}
