@@ -1,0 +1,24 @@
+# Maintainer: Erik Dubois <erik.dubois@gmail.com>
+pkgname=arch-boki-rofi-config
+_pkgname=arch-boki-rofi-config
+_licensedir="/usr/share/arch-boki/licenses/"
+pkgver=25.05
+pkgrel=05
+pkgdesc="rofi config for Arch-Boki"
+arch=('any')
+url="https://github.com/bojanstrkovski-21/arch-boki-rofi-config"
+license=('MIT')
+makedepends=('git')
+depends=()
+provides=("${pkgname}")
+options=(!strip !emptydirs)
+source=(${_pkgname}::"git+https://github.com/bojanstrkovski-21/${_pkgname}.git")
+sha256sums=('SKIP')
+install='readme.install'
+package() {
+	install -dm755 ${pkgdir}${_licensedir}${_pkgname}
+	install -m644  ${srcdir}/${_pkgname}/LICENSE ${pkgdir}${_licensedir}${_pkgname}
+
+	install -dm755 ${pkgdir}
+	cp -r ${srcdir}/* ${pkgdir}
+}

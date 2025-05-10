@@ -1,0 +1,61 @@
+# Maintainer: Bojan Strkovski url: https://github.com/bojanstrkovski-21
+
+pkgname=arch-boki-rofi-config
+pkgver=1.0
+pkgrel=01
+licensedir="/usr/share/arch-boki/licenses/"
+pkgdesc="rofi config for Arch-Boki"
+arch=('any')
+url="https://github.com/bojanstrkovski-21/arch-boki-rofi-config"
+license=('MIT')
+source=(${pkgname}::"git+https://github.com/bojanstrkovski-21/${pkgname}.git")
+md5sums=('SKIP')
+install=$pkgname.install
+
+package() {
+Install directories and files to /etc/skel/.config/$pkgname
+
+local target_dir="$pkgdir/etc/skel/.config/$pkgname"
+
+#Create the target directories
+
+install -dm755 ${pkgdir}${licensedir}${pkgname}
+install -m644  ${srcdir}/${pkgname}/LICENSE ${pkgdir}${licensedir}${pkgname}
+
+install -d -m755 "$target_dir/${pkgname}"
+# install -d -m755 "$target_dir/config_dir2"
+
+#Install files into the directories
+
+# install -Dm644 "$srcdir/config_dir1/file1" "$target_dir/config_dir1/file1"
+# install -Dm644 "$srcdir/config_dir2/file2" "$target_dir/config_dir2/file2"
+}
+
+pkgname=arch-boki-rofi-config
+pkgver=1.0
+pkgrel=01
+licensedir="/usr/share/arch-boki/licenses/"
+pkgdesc="rofi config for Arch-Boki"
+arch=('any')
+url="https://github.com/bojanstrkovski-21/arch-boki-rofi-config"
+license=('MIT')
+source=((${pkgname}::"git+https://github.com/bojanstrkovski-21/${pkgname}.git"))
+md5sums=('SKIP')
+install=post.install
+
+package() {
+# Install directories and files to /etc/skel/.config/$pkgname
+
+local target_dir="$pkgdir/etc/skel/.config/"
+local target_dir2="$pkgdir/etc/skel/.local/"
+
+# Create the target directories
+
+install -d -m755 "$target_dir"
+install -d -m755 "$target_dir2"
+
+Install files into the directories
+
+install -Dm644 "$srcdir/config_dir1/file1" "$target_dir/config_dir1/file1"
+install -Dm644 "$srcdir/config_dir2/file2" "$target_dir/config_dir2/file2"
+}

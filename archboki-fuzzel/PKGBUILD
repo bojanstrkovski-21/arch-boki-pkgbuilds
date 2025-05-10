@@ -1,0 +1,47 @@
+# Maintainer: Your Name your.email@example.com
+
+pkgname=archboki-fuzzel-config
+pkgver=1.0
+pkgrel=02
+licensedir="/usr/share/arch-boki/licenses/"
+pkgdesc="rofi config for Arch-Boki"
+arch=('any')
+url="https://github.com/bojanstrkovski-21/archboki-fuzzel-config"
+license=('MIT')
+source=(
+# 'launcher/config'
+# 'Launcher3/config'
+# 'launcher-aditaya/config'
+# 'powermenu/config'
+# 'powermenu-2/config'
+# 'rofi/config'
+# 'share/rofi/config'
+${pkgname}::"git+https://github.com/bojanstrkovski-21/${pkgname}.git"
+)
+md5sums=('SKIP') # Replace with actual checksums if needed
+install=5.install
+
+package() {
+
+# Install licence
+install -dm755 ${pkgdir}${licensedir}${pkgname}
+install -m644  ${srcdir}/${pkgname}/LICENSE ${pkgdir}${licensedir}${pkgname}
+
+# Install .config directories to /etc/skel/.config
+
+# local config_dir="$pkgdir/etc/skel/.config"
+# for dir in launcher Launcher3 launcher-aditaya powermenu powermenu-2 rofi; do
+# install -d -m755 "$config_dir/$dir"
+# install -Dm644 "$srcdir/$dir/config" "$config_dir/$dir/config"
+# done
+
+local config_dir="$pkgdir/etc/skel/.config"
+for dir in fuzzel; do
+    install -d -m755 "$config_dir/$dir"
+    cp -r "$srcdir/${pkgname}/etc/skel/.config/$dir"/* "$config_dir/$dir/" || {
+        echo "Error: Failed to copy directory $dir to $config_dir/$dir"
+        exit 1
+    }
+done
+
+}
