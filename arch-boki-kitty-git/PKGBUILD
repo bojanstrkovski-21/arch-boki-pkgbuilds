@@ -1,12 +1,12 @@
 # Maintainer: Your Name your.email@example.com
 
-pkgname=archboki-xfce
+pkgname=arch-boki-kitty-git
 pkgver=25.05
-pkgrel=04
+pkgrel=03
 licensedir="/usr/share/arch-boki/licenses/"
-pkgdesc="rofi config for Arch-Boki"
+pkgdesc="kitty config for Arch-Boki"
 arch=('any')
-url="https://github.com/bojanstrkovski-21/archboki-xfce"
+url="https://github.com/bojanstrkovski-21/arch-boki-kitty-git"
 license=('MIT')
 source=(
 # 'launcher/config'
@@ -36,11 +36,12 @@ install -m644  ${srcdir}/${pkgname}/LICENSE ${pkgdir}${licensedir}${pkgname}
 # done
 
 local config_dir="$pkgdir/etc/skel/.config"
-for dir in dconf gtk-3.0 Thunar tilix wallpapers xfce4; do
+for dir in kitty; do
     install -d -m755 "$config_dir/$dir"
     cp -r "$srcdir/${pkgname}/etc/skel/.config/$dir"/* "$config_dir/$dir/" || {
         echo "Error: Failed to copy directory $dir to $config_dir/$dir"
         exit 1
     }
 done
+
 }

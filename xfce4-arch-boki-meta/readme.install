@@ -1,0 +1,8 @@
+post_install() {
+    echo -e "\n** Meta Package from Arch-Boki **"
+    echo -e "** Installs xfce4 desktop **\n"
+}
+
+post_upgrade() {
+    post_install
+}

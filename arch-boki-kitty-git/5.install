@@ -1,0 +1,123 @@
+post_install() {
+echo "Starting post-install script..."
+
+# Determine the real user's home directory
+
+local user_home
+if [ -n "$SUDO_USER" ]; then
+user_home=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+if [ -z "$user_home" ] || [ ! -d "$user_home" ]; then
+echo "Error: Could not determine home directory for user $SUDO_USER."
+echo "Please manually copy files from /etc/skel/.config to your ~/.config."
+return 1
+fi
+else
+user_home="$HOME"
+if [ -z "$user_home" ] || [ ! -d "$user_home" ]; then
+echo "Error: HOME is not set or invalid ($user_home). Please manually copy files from /etc/skel/.config to ~/.config."
+return 1
+fi
+fi
+echo "Target user home directory: $user_home"
+
+# Ensure $user_home/.config exists
+
+local config_dir="$user_home/.config"
+if [ ! -d "$config_dir" ]; then
+echo "Creating $config_dir..."
+mkdir -p "$config_dir" || {
+echo "Error: Failed to create $config_dir."
+return 1
+}
+fi
+echo "$config_dir exists or was created."
+
+
+local source_config="/etc/skel/.config"
+local backup_dir="$user_home/.config/backup-$(date +%Y%m%d%H%M%S)"
+
+# Handle .config directories
+
+for dir in kitty; do
+echo "Checking $source_config/$dir..."
+if [ -d "$source_config/$dir" ]; then
+
+# Check if target directory exists
+
+if [ -e "$config_dir/$dir" ]; then
+echo "Found existing $config_dir/$dir. Backing up..."
+mkdir -p "$backup_dir" || {
+echo "Error: Failed to create backup directory $backup_dir."
+return 1
+}
+mv "$config_dir/$dir" "$backup_dir/$dir" || {
+echo "Error: Failed to back up $config_dir/$dir to $backup_dir/$dir."
+return 1
+}
+echo "Backed up $config_dir/$dir to $backup_dir/$dir."
+else
+echo "No existing $config_dir/$dir found."
+fi
+
+# Copy the directory
+
+echo "Copying $source_config/$dir to $config_dir/$dir..."
+cp -r "$source_config/$dir" "$config_dir/$dir" || {
+echo "Error: Failed to copy $source_config/$dir to $config_dir/$dir."
+return 1
+}
+echo "Successfully copied $source_config/$dir to $config_dir/$dir."
+else
+echo "Error: Source directory $source_config/$dir does not exist. Skipping."
+fi
+done
+
+# Fix permissions to ensure the user owns the copied files
+
+chown -R "$SUDO_USER:$SUDO_USER" "$config_dir" || {
+echo "Warning: Failed to set ownership of $config_dir to $SUDO_USER."
+}
+
+echo "Post-install complete. Configuration files copied to $config_dir."
+}
+
+post_upgrade() {
+	post_install
+}
+
+post_remove() {
+echo "Starting post-remove script..."
+
+# Determine the real user's home directory
+
+local user_home
+if [ -n "$SUDO_USER" ]; then
+user_home=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+if [ -z "$user_home" ] || [ ! -d "$user_home" ]; then
+echo "Error: Could not determine home directory for user $SUDO_USER."
+return 1
+fi
+else
+user_home="$HOME"
+if [ -z "$user_home" ] || [ ! -d "$user_home" ]; then
+echo "Error: HOME is not set or invalid ($user_home)."
+return 1
+fi
+fi
+echo "Target user home directory: $user_home"
+
+local config_dir="$user_home/.config"
+
+echo "Warning: Removing configuration files from $config_dir..."
+for dir in kitty; do
+if [ -e "$config_dir/$dir" ]; then
+rm -rf "$config_dir/$dir" || {
+echo "Error: Failed to remove $config_dir/$dir."
+}
+echo "Removed $config_dir/$dir."
+fi
+done
+
+echo "Post-remove complete. Configuration files removed from $config_dir."
+echo "Note: Backup directories (e.g., $config_dir/backup-*) were not removed."
+}
