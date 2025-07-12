@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+
+makepkg -s
+
+mv *.zst /home/bojanstrko/Arch-Boki-pkg/shtrkce-repo/x86_64/
+#mv *.zst /home/bojanstrko/shtrkce-xfce/shtrkce-xfce-iso/iso/airootfs/etc/shtrkce_local_repo/x86_64/
+
+rm -r -rf pkg src arch-boki-viper-grub-theme-main
+#rm -r *.tar.xz
+
+
+cd /home/bojanstrko/Arch-Boki-pkg/shtrkce-repo/x86_64/
+
+./update_repo.sh
+
+#cd /home/bojanstrko/shtrkce-xfce/shtrkce-xfce-iso/iso/airootfs/etc/shtrkce_local_repo/x86_64/
+
+#./update_repo.sh
