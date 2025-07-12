@@ -1,7 +1,7 @@
 # Maintainer: Your Name your.email@example.com
 
 pkgname=archboki-shells
-pkgver=25.05
+pkgver=25.07
 pkgrel=02
 licensedir="/usr/share/arch-boki/licenses/"
 pkgdesc="rofi config for Arch-Boki"
@@ -43,6 +43,12 @@ for dir in bash_aliases fish; do
         exit 1
     }
 done
+
+# Install starship.toml from .config to /etc/skel/.config/starship
+install -Dm644 "${srcdir}/${pkgname}/etc/skel/.config/starship.toml" "$config_dir/starship.toml" || {
+    echo "Error: Failed to copy starship.toml to $config_dir/starship.toml"
+    exit 1
+}
 
 # Install .bashrc to /etc/skel
     install -Dm644 "$srcdir/${pkgname}/etc/skel/bashrc-latest" "$pkgdir/etc/skel/bashrc-latest" || {

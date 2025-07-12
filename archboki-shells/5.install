@@ -98,15 +98,48 @@ done
     else
         echo "Error: Source file $source_bashrc does not exist. Skipping."
     fi
-    
+   
     # Fix permissions to ensure the user owns the copied files
     chown -R "$SUDO_USER:$SUDO_USER" "$config_dir" "$user_home/.bashrc" || {
         echo "Warning: Failed to set ownership of $config_dir or $user_home/.bashrc to $SUDO_USER."
     }
 
-    echo "Post-install complete. Configuration files copied to $config_dir and $user_home/.bashrc."
-    echo "Note: If a previous ~/.bashrc existed, it was backed up to $user_home/.bashrc.orig.bak-<year>.<month>."
+    # Handle starship.toml
+    local starship="/etc/skel/.config/starship.toml"
+    if [ -f "$starship" ]; then
+        # Check if target starship.toml exists
+        if [ -e "$config_dir/starship.toml" ]; then
+            echo "Found existing $config_dir/starship.toml. Backing up..."
+            local backup_starship="$config_dir/starship.toml.orig.bak-$(date +%Y.%m)"
+            mv "$config_dir/starship.toml" "$backup_starship" || {
+                echo "Error: Failed to back up $config_dir/starship.toml to $backup_starship."
+                return 1
+            }
+            echo "Backed up $config_dir/starship.toml to $backup_starship."
+        else
+            echo "No existing $config_dir/starship.toml found."
+        fi
+
+        # Copy starship.toml to $config_dir/starship.toml
+        echo "Copying $starship to $config_dir/starship.toml..."
+        cp "$starship" "$config_dir/starship.toml" || {
+            echo "Error: Failed to copy $starship to $config_dir/starship.toml."
+            return 1
+        }
+        echo "Successfully copied $starship to $config_dir/starship.toml."
+    else
+        echo "Error: Source file $starship does not exist. Skipping."
+    fi
+
+    # Fix permissions to ensure the user owns the copied files
+    chown -R "$SUDO_USER:$SUDO_USER" "$config_dir" "$config_dir/starship.toml" || {
+        echo "Warning: Failed to set ownership of $config_dir or $config_dir/starship.toml to $SUDO_USER."
+
+    echo "Post-install complete. Configuration files copied to $config_dir and $user_home/.bashrc and starship.toml."
+    echo "Note: If a previous ~/.bashrc or starship.toml existed, it was backed up to $user_home/.bashrc.orig.bak-<year>.<month> or starship.toml.orig.bak-<year>.<month>."
+    }
 }
+
 
 post_upgrade() {
 	post_install
@@ -154,6 +187,15 @@ if [ -e "$user_home/.bashrc" ]; then
     echo "Removed $user_home/.bashrc."
 fi
 
-echo "Post-remove complete. Configuration files removed from $config_dir and $user_home/.bashrc."
+# Remove starship.toml
+if [ -e "$config_dir/starship.toml" ]; then
+    echo "Warning: Removing $config_dir/starship.toml..."
+    rm -f "$config_dir/starship.toml" || {
+        echo "Error: Failed to remove $config_dir/starship.toml."
+    }
+    echo "Removed $config_dir/starship.toml."
+fi
+
+echo "Post-remove complete. Configuration files removed from $config_dir and $user_home/.bashrc and $config_dir/starship.toml."
 echo "Note: Backup directories (e.g., $config_dir/backup-*) were not removed."
 }
