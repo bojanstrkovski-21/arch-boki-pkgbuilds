@@ -2,12 +2,13 @@
 
 pkgname=archboki-shells
 pkgver=25.07
-pkgrel=02
+pkgrel=03
 licensedir="/usr/share/arch-boki/licenses/"
 pkgdesc="rofi config for Arch-Boki"
 arch=('any')
 url="https://github.com/bojanstrkovski-21/archboki-shells"
 license=('MIT')
+depends=('zoxide' 'most' 'fzf' 'eza' 'sparklines-git')
 source=(
 # 'launcher/config'
 # 'Launcher3/config'
